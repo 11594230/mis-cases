@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minor Injury &amp; Illness — Clinical Reasoning Cases</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16232b;
+  --ink-soft:#3a4a54;
+  --paper:#f7f5ef;
+  --card:#ffffff;
+  --line:#dfe1d8;
+  --teal:#0f6b63;
+  --teal-deep:#0a4c46;
+  --teal-wash:#e6f0ee;
+  --amber:#c9711f;
+  --amber-wash:#fbeede;
+  --ok:#1f7a4d;
+  --ok-wash:#e6f2ea;
+  --miss:#b23b34;
+  --miss-wash:#faeae8;
+  /* system tags */
+  --sys-upper:#3a6ea5;
+  --sys-lower:#5c8a3a;
+  --sys-head:#a5493a;
+  --sys-spine:#7a5aa5;
+  --sys-wound:#b26a2a;
+  --sys-illness:#2a8a86;
+  --sys-eye:#a5417a;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --disp:"Fraunces",Georgia,serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body);color:var(--ink);background:var(--paper);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+a{color:var(--teal);text-underline-offset:2px}
+
+/* ---------- Layout shell ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header.top{
+  border-bottom:1px solid var(--line);background:var(--card);
+  position:sticky;top:0;z-index:50;
+}
+.top-inner{display:flex;align-items:center;gap:18px;padding:14px 20px;max-width:1180px;margin:0 auto}
+.brand{display:flex;flex-direction:column;line-height:1.15}
+.brand .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.brand h1{font-family:var(--disp);font-weight:600;font-size:20px;letter-spacing:-.01em}
+.top-meta{margin-left:auto;display:flex;align-items:center;gap:14px}
+.pill{font-family:var(--mono);font-size:11px;color:var(--ink-soft);border:1px solid var(--line);padding:5px 10px;border-radius:999px;white-space:nowrap}
+.progress-pill{color:var(--teal-deep);border-color:var(--teal);background:var(--teal-wash)}
+
+/* ---------- Intro ---------- */
+.intro{padding:40px 0 8px}
+.intro .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+.intro h2{font-family:var(--disp);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.08;letter-spacing:-.02em;max-width:20ch}
+.intro p.lede{font-size:17px;color:var(--ink-soft);max-width:62ch;margin-top:16px}
+.intro .how{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px}
+.chip{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);padding:8px 12px;border-radius:8px}
+.chip b{color:var(--ink);font-weight:600}
+.chip .n{font-family:var(--mono);font-size:11px;color:var(--teal);border:1px solid var(--teal);border-radius:50%;width:20px;height:20px;display:grid;place-items:center;flex:none}
+
+/* ---------- Case grid ---------- */
+.grid-head{display:flex;align-items:baseline;justify-content:space-between;margin:38px 0 16px;flex-wrap:wrap;gap:10px}
+.grid-head h3{font-family:var(--disp);font-weight:600;font-size:22px}
+.grid-head .note{font-size:13px;color:var(--ink-soft)}
+.cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:14px;padding-bottom:60px}
+.case-card{
+  text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:18px;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,border-color .12s;
+  display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;font:inherit;color:inherit;
+}
+.case-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(20,35,43,.08);border-color:#c9ccc0}
+.case-card:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.case-card .num{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+.case-card .sys{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:5px;color:#fff;align-self:flex-start}
+.case-card h4{font-family:var(--disp);font-weight:600;font-size:18px;line-height:1.2}
+.case-card .teaser{font-size:13.5px;color:var(--ink-soft)}
+.case-card .done-flag{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:10px;color:var(--ok);background:var(--ok-wash);border:1px solid #bfe0cc;padding:3px 7px;border-radius:5px;display:none}
+.case-card.done .done-flag{display:block}
+.case-card .strip{position:absolute;left:0;top:0;bottom:0;width:4px}
+
+/* ---------- Case view ---------- */
+.caseview{display:none}
+.caseview.active{display:block;padding:26px 0 80px}
+.backbar{display:flex;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.btn-back{font:inherit;font-size:14px;background:none;border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer;color:var(--ink);display:inline-flex;gap:7px;align-items:center}
+.btn-back:hover{background:var(--card);border-color:#c9ccc0}
+.case-title-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:6px}
+.case-title-row .sys{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;color:#fff;margin-top:6px;flex:none}
+.case-title-row h2{font-family:var(--disp);font-weight:600;font-size:clamp(24px,3.4vw,34px);line-height:1.1;letter-spacing:-.01em}
+.case-sub{font-size:14px;color:var(--ink-soft);font-family:var(--mono)}
+
+/* case hero image */
+.case-hero{margin:16px 0 4px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);line-height:0}
+.case-hero img{display:block;width:100%;aspect-ratio:16/7;object-fit:cover}
+.case-hero figcaption{font-family:var(--mono);font-size:11px;color:var(--ink-soft);padding:8px 14px;line-height:1.4;border-top:1px solid var(--line);background:var(--paper)}
+
+/* stage blocks */
+.stage{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 24px;margin-top:16px}
+.stage-label{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.stage-label .tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-deep)}
+.stage-label .rule{flex:1;height:1px;background:var(--line)}
+.stage h3{font-family:var(--disp);font-weight:600;font-size:19px;margin-bottom:8px}
+.stage p{margin:8px 0;color:var(--ink)}
+.stage .muted{color:var(--ink-soft)}
+
+.dl{display:grid;grid-template-columns:minmax(120px,150px) 1fr;gap:6px 18px;margin:10px 0;font-size:14.5px}
+.dl dt{font-family:var(--mono);font-size:12px;color:var(--ink-soft);padding-top:2px}
+.dl dd{color:var(--ink)}
+
+.findings{list-style:none;margin:8px 0}
+.findings li{padding:7px 0 7px 24px;position:relative;border-bottom:1px dashed var(--line);font-size:14.5px}
+.findings li:last-child{border-bottom:none}
+.findings li::before{content:"";position:absolute;left:4px;top:14px;width:7px;height:7px;border-radius:50%;background:var(--teal)}
+.findings li b{font-weight:600}
+
+.callout{border-left:3px solid var(--amber);background:var(--amber-wash);padding:12px 16px;border-radius:0 8px 8px 0;font-size:14px;margin:14px 0}
+.callout .lab{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:4px}
+
+/* commit stage */
+.commit .prompt{font-size:16px;font-weight:600;margin-bottom:6px}
+.commit textarea{
+  width:100%;min-height:130px;border:1px solid var(--line);border-radius:10px;padding:14px;
+  font:inherit;font-size:15px;resize:vertical;background:var(--paper);color:var(--ink);
+}
+.commit textarea:focus{outline:2px solid var(--teal);outline-offset:1px;background:#fff}
+.commit .hint{font-size:13px;color:var(--ink-soft);margin:8px 0 14px}
+.reveal-btn{
+  font:inherit;font-weight:600;font-size:15px;background:var(--teal);color:#fff;border:none;
+  border-radius:10px;padding:13px 26px;cursor:pointer;transition:background .12s
+}
+.reveal-btn:hover{background:var(--teal-deep)}
+.reveal-btn:disabled{background:#c2c8c3;cursor:not-allowed}
+.commit .locknote{font-size:12.5px;color:var(--ink-soft);margin-top:10px}
+
+/* revealed answer */
+.answer{display:none;margin-top:16px}
+.answer.show{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.answer .yours{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.answer .yours .lab{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:6px}
+.answer .yours p{white-space:pre-wrap;font-size:14.5px}
+.model .lab{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ok);display:block;margin-bottom:8px}
+.model ul{list-style:none}
+.model ul li{padding:6px 0 6px 22px;position:relative;font-size:14.5px;border-bottom:1px dashed var(--line)}
+.model ul li:last-child{border-bottom:none}
+.model ul li::before{content:"✓";position:absolute;left:0;top:6px;color:var(--ok);font-weight:700}
+.diffs{display:grid;gap:8px;margin:10px 0}
+.diff-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:10px 14px;border:1px solid var(--line);border-radius:9px;font-size:14px}
+.diff-row .dx{font-weight:600}
+.diff-row .verdict{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;white-space:nowrap}
+.v-most{background:var(--ok-wash);color:var(--ok)}
+.v-cant{background:var(--miss-wash);color:var(--miss)}
+.v-also{background:var(--teal-wash);color:var(--teal-deep)}
+
+.decision-box{border:1px solid var(--teal);background:var(--teal-wash);border-radius:10px;padding:16px 18px;margin-top:8px}
+.decision-box .verdict-lab{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-deep)}
+.decision-box .verdict-val{font-family:var(--disp);font-weight:600;font-size:20px;margin:4px 0 8px}
+
+.ref-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.ref-tags .rt{font-family:var(--mono);font-size:11px;color:var(--ink-soft);border:1px solid var(--line);background:var(--paper);padding:5px 10px;border-radius:6px}
+
+.case-nav{display:flex;justify-content:space-between;gap:12px;margin-top:30px}
+.case-nav button{font:inherit;font-size:14px;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:11px 18px;cursor:pointer;color:var(--ink)}
+.case-nav button:hover:not(:disabled){border-color:var(--teal);color:var(--teal-deep)}
+.case-nav button:disabled{opacity:.4;cursor:not-allowed}
+
+footer{border-top:1px solid var(--line);padding:26px 0;font-size:12.5px;color:var(--ink-soft);text-align:center}
+footer .mono{font-family:var(--mono)}
+
+@media(max-width:640px){
+  .dl{grid-template-columns:1fr;gap:2px 0}
+  .dl dt{padding-top:8px}
+  .top-meta .pill:not(.progress-pill){display:none}
+  .stage{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <span class="eyebrow">6PC501 · Minor Injury &amp; Illness</span>
+      <h1>Clinical Reasoning Cases</h1>
+    </div>
+    <div class="top-meta">
+      <span class="pill">Level 6 · BSc Paramedic Practice</span>
+      <span class="pill progress-pill" id="progressPill">0 / 10 worked</span>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HOME ================= -->
+<main id="home">
+  <div class="wrap">
+    <section class="intro">
+      <div class="kicker">Reason first · reveal second</div>
+      <h2>Ten presentations. Commit your thinking before the answer shows.</h2>
+      <p class="lede">Each case builds the way a real contact does: dispatch, history, examination, then a decision point. Write your differential and plan, lock it in, and only then compare against the worked reasoning and the relevant decision rule. The aim is defensible clinical reasoning, not protocol recall.</p>
+      <div class="how">
+        <span class="chip"><span class="n">1</span><b>Take the history &amp; examine</b></span>
+        <span class="chip"><span class="n">2</span><b>Commit your reasoning</b></span>
+        <span class="chip"><span class="n">3</span><b>Reveal &amp; self-mark</b></span>
+      </div>
+    </section>
+
+    <div class="grid-head">
+      <h3>Choose a case</h3>
+      <span class="note">Order is up to you. Progress is kept for this session only.</span>
+    </div>
+    <div class="cases" id="caseGrid"></div>
+  </div>
+</main>
+
+<!-- ================= CASE VIEW ================= -->
+<div class="caseview" id="caseView">
+  <div class="wrap">
+    <div class="backbar">
+      <button class="btn-back" onclick="goHome()">← All cases</button>
+      <span class="case-sub" id="cvCounter"></span>
+    </div>
+    <div id="cvBody"></div>
+    <div class="case-nav">
+      <button id="cvPrev" onclick="stepCase(-1)">← Previous case</button>
+      <button id="cvNext" onclick="stepCase(1)">Next case →</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="mono">West Midlands Ambulance Service · paramedic education resource</div>
+    <div style="margin-top:6px">Educational use only. Always apply current JRCALC, NICE and local WMAS guidance to the patient in front of you.</div>
+  </div>
+</footer>
+
+<script>
+/* =======================================================================
+   SYSTEM COLOURS
+   ======================================================================= */
+const SYS = {
+  upper:{label:"Upper limb",c:"var(--sys-upper)"},
+  lower:{label:"Lower limb",c:"var(--sys-lower)"},
+  head:{label:"Head",c:"var(--sys-head)"},
+  spine:{label:"Spine",c:"var(--sys-spine)"},
+  wound:{label:"Wounds",c:"var(--sys-wound)"},
+  illness:{label:"Minor illness",c:"var(--sys-illness)"},
+  eye:{label:"Eye / ENT",c:"var(--sys-eye)"}
+};
+
+/* =======================================================================
+   CASE DATA
+   ======================================================================= */
+const CASES = [
+{
+  sys:"upper", title:"Fall onto an outstretched hand", teaser:"Woman, 32, wrist pain after tripping on a kerb.",
+  dispatch:{
+    Call:"See-and-treat, MIU walk-in", Patient:"Female, 32", PC:"Right wrist pain after a fall",
+    Scene:"Tripped on a raised paving slab on the high street an hour ago and fell forward onto the palm of her outstretched right hand. Walked in herself, cradling the wrist against her chest."
+  },
+  history:[
+    ["Onset","Sudden, immediately after the fall."],
+    ["Mechanism","FOOSH, wrist forced into extension."],
+    ["Pain","Aching over the radial side of the wrist, worse on gripping and twisting a key."],
+    ["Swelling","Mild, over the radial wrist."],
+    ["PMH / meds","Fit and well, no regular medication. No allergies."],
+    ["Hand dominance","Right-handed."]
+  ],
+  exam:[
+    "No obvious deformity. Skin intact.",
+    "<b>Tender in the anatomical snuffbox</b> on the radial side.",
+    "Pain reproduced on <b>axial loading (telescoping) of the thumb</b>.",
+    "Some tenderness over the distal radius but no step.",
+    "Full but uncomfortable range of movement. Neurovascularly intact, good cap refill and sensation."
+  ],
+  redflag:{lab:"Reasoning trap",text:"An initial wrist X-ray can look normal even when a scaphoid fracture is present. Snuffbox tenderness plus a FOOSH mechanism is a clinical diagnosis until proven otherwise."},
+  prompt:"What is your leading differential, what one examination finding drives it, and how does that change your management compared with a simple sprain?",
+  hint:"Think about which specific bone the mechanism and the snuffbox point you towards, and what its blood supply means for missed fractures.",
+  model:[
+    "Leading differential is a <b>scaphoid fracture</b>, driven by snuffbox tenderness and pain on thumb axial loading after a FOOSH.",
+    "Distal radius fracture is the main alternative given radial tenderness, so it is not either/or, both need excluding.",
+    "The scaphoid has a retrograde blood supply, so a missed fracture risks avascular necrosis and non-union.",
+    "Because early X-rays can be normal, clinical suspicion alone justifies immobilisation and re-imaging, you do not clear it on a normal film.",
+    "Manage as a suspected scaphoid: thumb spica / wrist support, analgesia, refer for imaging and MIU / fracture clinic follow-up, safety-net for re-review even if the first X-ray is clear."
+  ],
+  diffs:[
+    ["Scaphoid fracture","v-most","Most likely"],
+    ["Distal radius fracture","v-also","Exclude too"],
+    ["Simple wrist sprain","v-cant","Not safe to assume"]
+  ],
+  decision:{val:"Refer for imaging, immobilise, do not clear on a normal film",
+    text:"Splint, analgesia and onward referral. Document the snuffbox tenderness and the plan to re-image if symptoms persist. This is a see-and-treat with referral, not a discharge with reassurance."},
+  refs:["FOOSH mechanism","Anatomical snuffbox","Scaphoid blood supply","Re-image if X-ray normal"]
+},
+{
+  sys:"upper", title:"Shoulder after a fall onto the side", teaser:"Man, 58, manual worker, shoulder pain and weakness lifting the arm.",
+  dispatch:{
+    Call:"MIU assessment", Patient:"Male, 58", PC:"Left shoulder pain",
+    Scene:"Slipped on an icy works car park two days ago and landed on his left shoulder and outstretched arm. Growing difficulty lifting the arm since, holding it protectively against his side."
+  },
+  history:[
+    ["Onset","Two days ago, direct fall onto the shoulder."],
+    ["Pain","Deep ache over the lateral shoulder, worse at night and lying on it."],
+    ["Function","Struggles to lift the arm out to the side, can drop it once raised."],
+    ["Weakness","Feels weak reaching for a seatbelt or overhead."],
+    ["PMH","Hypertension. Manual worker."],
+    ["Neuro","No numbness or pins and needles down the arm."]
+  ],
+  exam:[
+    "No visible deformity, no squaring of the shoulder, contour preserved.",
+    "<b>Painful arc</b> roughly 60 to 120 degrees of abduction.",
+    "<b>Positive empty-can (Jobe's) test</b>, weakness and pain resisting downward pressure with the thumb pointing down.",
+    "Positive drop-arm sign, arm drifts down when lowered from full abduction.",
+    "Neurovascularly intact. No apprehension on external rotation."
+  ],
+  redflag:{lab:"Distinguish the two",text:"A dislocation gives loss of the normal rounded contour, squaring, and the arm held fixed. This contour is preserved with a full but weak range, which points at the cuff rather than the joint."},
+  prompt:"Cuff pathology or instability? State which special tests you are relying on and what a positive result tells you, then give your differential and plan.",
+  hint:"Jobe's isolates one specific muscle. The apprehension test screens a different problem entirely. Which one is positive here?",
+  model:[
+    "Leading differential is a <b>rotator cuff tear, supraspinatus</b>, supported by a positive Jobe's (empty-can) test and a positive drop-arm sign.",
+    "The painful arc at 60 to 120 degrees fits subacromial / cuff pathology rather than the joint itself.",
+    "A negative apprehension test and preserved contour make dislocation or instability unlikely, so this is a soft-tissue problem, not a reduction.",
+    "Jobe's isolates supraspinatus, drop-arm suggests a significant or full-thickness tear, that combination raises the priority of orthopaedic follow-up.",
+    "Manage with analgesia, a sling for comfort not immobilisation, early referral / physiotherapy, and safety-net. Consider imaging (ultrasound or MRI) via the referral pathway."
+  ],
+  diffs:[
+    ["Rotator cuff tear (supraspinatus)","v-most","Most likely"],
+    ["Subacromial impingement","v-also","Related, consider"],
+    ["Anterior dislocation","v-cant","Contour preserved"]
+  ],
+  decision:{val:"See-and-treat with orthopaedic / physio referral",
+    text:"Analgesia, comfort sling, referral for imaging and physiotherapy. Document the positive Jobe's and drop-arm. Not a joint that needs reducing."},
+  refs:["Jobe's / empty-can test","Drop-arm sign","Painful arc 60–120°","Apprehension test (negative)"]
+},
+{
+  sys:"lower", title:"Twisted ankle stepping off a kerb", teaser:"Woman, 24, lateral ankle pain, unsure if it needs X-ray.",
+  dispatch:{
+    Call:"MIU walk-in", Patient:"Female, 24", PC:"Right ankle injury",
+    Scene:"Inverted her right ankle stepping off a high kerb outside a bar three hours ago. Hobbled in with a friend supporting her, lower leg swollen over the outer ankle."
+  },
+  history:[
+    ["Mechanism","Inversion injury, rolled onto the outside of the foot."],
+    ["Weight-bearing","Managed a few limping steps at the scene, hobbled in with support."],
+    ["Pain","Over the lateral malleolus and soft tissue below it."],
+    ["Swelling","Moderate, lateral ankle."],
+    ["PMH","Nil relevant, no previous ankle injuries."]
+  ],
+  exam:[
+    "Swelling and bruising over the lateral malleolus.",
+    "<b>No bone tenderness</b> over the posterior edge or tip of either malleolus.",
+    "Tender over the anterior talofibular ligament area.",
+    "No tenderness at the navicular or base of the 5th metatarsal.",
+    "<b>Able to weight-bear</b>, four steps in the department, though painful."
+  ],
+  redflag:{lab:"Apply the rule",text:"Ottawa Ankle Rules exist to decide who needs an X-ray. Malleolar-zone pain triggers assessment, but imaging is only indicated with specific bony tenderness or an inability to weight-bear."},
+  prompt:"Work through the Ottawa Ankle Rules out loud. Does this patient need an X-ray? State your reasoning and your management plan.",
+  hint:"Ottawa needs pain in the malleolar zone PLUS bony tenderness at defined points OR inability to weight-bear for four steps. How many of those are present here?",
+  model:[
+    "Applying the <b>Ottawa Ankle Rules</b>: there is malleolar-zone pain, but no bony tenderness at the posterior edge or tip of either malleolus, and the patient can weight-bear four steps.",
+    "No midfoot tenderness at the navicular or base of the 5th metatarsal, so the Ottawa Foot Rules are also negative.",
+    "On that basis an <b>X-ray is not indicated</b>, this is a lateral ligament sprain (ATFL).",
+    "The rules are highly sensitive for excluding fracture, which is exactly why a negative rule is a defensible reason not to image.",
+    "Manage with the current soft-tissue approach, relative rest, ice, elevation, early mobilisation and analgesia, advice on progressive weight-bearing, and safety-net to return if unable to weight-bear or symptoms worsen."
+  ],
+  diffs:[
+    ["Lateral ligament sprain (ATFL)","v-most","Most likely"],
+    ["Malleolar fracture","v-cant","Ottawa negative"],
+    ["5th metatarsal fracture","v-cant","No midfoot tenderness"]
+  ],
+  decision:{val:"No X-ray indicated, treat as a sprain",
+    text:"Ottawa Ankle and Foot Rules negative. Soft-tissue management, analgesia, mobilisation advice, safety-net. Document each Ottawa element you checked."},
+  refs:["Ottawa Ankle Rules","Ottawa Foot Rules","Malleolar zone","Weight-bearing 4 steps"]
+},
+{
+  sys:"lower", title:"Knee injury on the football pitch", teaser:"Man, 27, twisting injury, knee swelled the same evening.",
+  dispatch:{
+    Call:"MIU assessment", Patient:"Male, 27", PC:"Left knee injury",
+    Scene:"Twisted his left knee playing five-a-side on an astroturf pitch yesterday when his planted foot stuck. Felt a pop, and the knee swelled over the evening. Walked in with an obvious limp."
+  },
+  history:[
+    ["Mechanism","Twisting / pivoting on a planted foot, felt a pop."],
+    ["Swelling","Developed within a few hours (haemarthrosis pattern)."],
+    ["Pain","Deep in the knee, worse on twisting and squatting."],
+    ["Giving way","Felt unstable trying to turn since."],
+    ["Locking","Occasional catching but no true locking."],
+    ["PMH","Fit, plays regularly, no previous knee problems."]
+  ],
+  exam:[
+    "Moderate effusion, warm knee.",
+    "<b>Can flex to about 80 degrees</b> before pain limits further.",
+    "No isolated patellar tenderness, no fibular head tenderness.",
+    "Positive Lachman-type laxity with a soft end-point.",
+    "<b>Able to weight-bear</b> four steps with a limp. Age under 55."
+  ],
+  redflag:{lab:"Two rules, two jobs",text:"Ottawa Knee Rules tell you who needs an X-ray to exclude fracture. Special tests such as Lachman and McMurray probe the soft tissue. Answer the imaging question first, then reason about the ligament."},
+  prompt:"Run the Ottawa Knee Rules, then give your soft-tissue differential with the test that supports it. What is your plan?",
+  hint:"Ottawa Knee: age 55+, fibular head tenderness, isolated patellar tenderness, cannot flex to 90°, cannot weight-bear four steps. Rapid effusion after a pivot injury points strongly at one structure.",
+  model:[
+    "<b>Ottawa Knee Rules</b> image if any one of five triggers is present. Here age is under 55 (negative), no fibular head or isolated patellar tenderness (negative), but he <b>cannot flex to 90 degrees</b> (positive), so an X-ray IS indicated to exclude fracture.",
+    "Soft-tissue differential is an <b>ACL injury</b>, supported by a pivot mechanism, an audible pop, rapid effusion and Lachman laxity with a soft end-point.",
+    "A rapid (same-day) effusion suggests haemarthrosis, which raises the likelihood of a significant ligament or osteochondral injury rather than a simple sprain.",
+    "Meniscal injury is a reasonable co-existing possibility, McMurray's would help but is uncomfortable acutely.",
+    "Plan: X-ray per Ottawa, analgesia, support and crutches for comfort, refer to orthopaedics / knee clinic, safety-net and physiotherapy input."
+  ],
+  diffs:[
+    ["ACL injury","v-most","Most likely"],
+    ["Meniscal tear","v-also","Consider / co-exist"],
+    ["Fracture","v-also","Ottawa positive, image"]
+  ],
+  decision:{val:"X-ray per Ottawa, then orthopaedic referral",
+    text:"Cannot flex to 90° so imaging is indicated. Treat the likely ACL with support, analgesia, referral and physio. Document the Ottawa element that triggered the X-ray and the Lachman finding."},
+  refs:["Ottawa Knee Rules","Lachman test","McMurray's test","Haemarthrosis significance"]
+},
+{
+  sys:"head", title:"Minor head injury on an anticoagulant", teaser:"Woman, 79, lives alone, fall with a head bump, takes apixaban.",
+  dispatch:{
+    Call:"Home visit, fallen", Patient:"Female, 79", PC:"Head injury after a fall",
+    Scene:"Slipped on a wet bathroom floor at home and struck the right side of her head on the edge of the sink. Now sitting in her armchair, alert and talking, keen to stay at home."
+  },
+  history:[
+    ["LOC","Uncertain, possibly a brief loss of consciousness, no clear witness."],
+    ["Amnesia","Slightly hazy on the moments around the fall."],
+    ["Symptoms","Mild headache, no vomiting, no visual change, no seizure."],
+    ["Meds","<b>Apixaban</b> for atrial fibrillation. Amlodipine."],
+    ["PMH","AF, hypertension. Lives alone."],
+    ["Obs","GCS 15, no focal neurology, no skull base signs."]
+  ],
+  exam:[
+    "GCS 15, orientated, no focal neurological deficit.",
+    "Small haematoma over the right temple, no boggy swelling or step.",
+    "No signs of a basal skull fracture, no CSF leak, no battle sign, no panda eyes.",
+    "No neck tenderness, no distracting injury.",
+    "Lives alone, no one able to observe her overnight."
+  ],
+  redflag:{lab:"The reasoning point",text:"NICE NG232 treats anticoagulation as a specific trigger for imaging even when everything else looks reassuring. The temptation to leave a well, GCS 15 patient at home is exactly the trap."},
+  prompt:"She looks well and wants to stay home. Using NICE NG232, justify your conveyance decision and imaging reasoning.",
+  hint:"NG232 has a specific recommendation for head injury in patients on anticoagulant or antiplatelet treatment even with no other CT indication. What is the timeframe, and what does that mean for non-conveyance?",
+  model:[
+    "Under <b>NICE NG232</b>, a head injury in a patient on anticoagulant treatment warrants a <b>CT head within 8 hours</b> even with no other indication.",
+    "The possible brief LOC and amnesia are additional flags, but the anticoagulation alone is enough to require imaging.",
+    "That makes <b>non-conveyance unsafe</b>, she needs to travel to ED for the CT, this is not a leave-at-home even at GCS 15.",
+    "Delayed intracranial bleeding is the specific concern in anticoagulated older patients, which is why a well appearance does not reassure.",
+    "Living alone with no one to observe removes the safety-net that non-conveyance would rely on, reinforcing conveyance. Document GCS, the medication, and the NG232 rationale."
+  ],
+  diffs:[
+    ["Convey for CT head","v-most","Correct call"],
+    ["Leave at home, safety-net","v-cant","Unsafe here"],
+    ["Occult intracranial bleed","v-also","The thing you are excluding"]
+  ],
+  decision:{val:"Convey to ED for CT head within 8 hours",
+    text:"Anticoagulation plus possible LOC and amnesia mandates imaging under NG232. GCS 15 and a well appearance do not override this. Document medication, GCS and rationale clearly."},
+  refs:["NICE NG232","Anticoagulant + head injury","CT within 8 hours","Delayed ICH risk"]
+},
+{
+  sys:"spine", title:"Lower back pain after lifting", teaser:"Man, 44, warehouse worker, acute back pain, screen for the red flags.",
+  dispatch:{
+    Call:"MIU / primary care", Patient:"Male, 44", PC:"Acute lower back pain",
+    Scene:"Lifted a heavy box awkwardly with a twist at the start of a warehouse shift this morning and felt immediate lower back pain. Standing stiffly, reluctant to bend."
+  },
+  history:[
+    ["Onset","Acute, lifting with a twist."],
+    ["Pain","Central and left lower back, some ache into the left buttock."],
+    ["Neuro","No leg weakness, no numbness in the legs."],
+    ["Bladder / bowel","<b>No retention, no incontinence, normal control.</b>"],
+    ["Saddle area","<b>No saddle or perineal numbness.</b>"],
+    ["Red flags","No fever, no weight loss, no cancer history, no night pain, no trauma beyond the lift."]
+  ],
+  exam:[
+    "Reduced, painful lumbar range of movement, muscular pattern.",
+    "Paraspinal tenderness, no midline bony tenderness.",
+    "Normal power, tone, sensation and reflexes in both legs.",
+    "Straight leg raise mildly uncomfortable but not radicular.",
+    "<b>Normal anal tone and no saddle anaesthesia on direct questioning.</b>"
+  ],
+  redflag:{lab:"What you are ruling out",text:"Most acute back pain is mechanical, but the job is to actively exclude cauda equina and other sinister causes before reassuring. The red flags must be asked, not assumed."},
+  prompt:"Which serious diagnosis must you exclude, what specific features would you check, and given they are all negative, what is your plan?",
+  hint:"One emergency spinal diagnosis is the reason you always ask about the saddle area and bladder function. Name it and its red flags.",
+  model:[
+    "The must-exclude diagnosis is <b>cauda equina syndrome</b>.",
+    "Its red flags are bilateral sciatica, saddle / perineal anaesthesia, bladder dysfunction (retention or incontinence), bowel dysfunction, sexual dysfunction and progressive neurological deficit, all specifically asked and negative here.",
+    "With every cauda equina flag negative and a normal lower-limb neurological exam, this is <b>mechanical lower back pain</b>.",
+    "Also screen briefly for infection, fracture and malignancy flags (fever, trauma, cancer history, unexplained weight loss, night pain), all negative here.",
+    "Manage conservatively: analgesia, stay active and avoid bed rest, reassurance and a clear safety-net that any saddle numbness or bladder / bowel change means immediate emergency reassessment. Document the negative red-flag screen explicitly."
+  ],
+  diffs:[
+    ["Mechanical lower back pain","v-most","Most likely"],
+    ["Cauda equina syndrome","v-cant","Excluded, but must screen"],
+    ["Sinister cause (infection/tumour/#)","v-cant","Flags negative"]
+  ],
+  decision:{val:"Self-care with a documented red-flag safety-net",
+    text:"Mechanical back pain once cauda equina and sinister flags are excluded. Keep active, analgesia, reassurance. Explicitly document the negative saddle and bladder screen and the return advice."},
+  refs:["Cauda equina red flags","Saddle anaesthesia","Bladder / bowel screen","Keep active advice"]
+},
+{
+  sys:"wound", title:"Hand laceration from a kitchen knife", teaser:"Man, 36, deep cut to the palm, check before you close.",
+  dispatch:{
+    Call:"MIU walk-in", Patient:"Male, 36", PC:"Cut to the right palm",
+    Scene:"Slipped while chopping vegetables at home forty minutes ago and a clean kitchen knife caught the right palm at the base of the ring finger. Walked in with the hand wrapped in a tea towel, bleeding now controlled."
+  },
+  history:[
+    ["Mechanism","Clean kitchen knife, single slice."],
+    ["Bleeding","Was brisk, now controlled with pressure."],
+    ["Function","Notices the ring finger feels odd and is hard to bend fully."],
+    ["Tetanus","Last booster over ten years ago, unsure."],
+    ["PMH","Fit and well, no anticoagulants."],
+    ["Dominance","Right-handed."]
+  ],
+  exam:[
+    "2.5 cm laceration across the volar palm at the base of the ring finger.",
+    "<b>Reduced active flexion of the ring finger at the PIP joint.</b>",
+    "<b>Altered two-point discrimination on the ulnar border of the ring finger.</b>",
+    "Cap refill intact, finger pink and warm.",
+    "Wound looks clean, no obvious foreign body, but depth not fully visualised."
+  ],
+  redflag:{lab:"Look before you close",text:"A palmar laceration over a flexor tendon and digital nerve is not a wound to simply glue and discharge. Function and sensation must be tested and documented before any closure decision."},
+  prompt:"Would you close this in MIU or refer? Justify using your neurovascular and tendon assessment, and cover tetanus.",
+  hint:"Two structures sit right under a volar laceration at the finger base. What does reduced flexion suggest, and what does altered two-point discrimination suggest?",
+  model:[
+    "This needs <b>referral, not simple closure</b>, because the examination suggests deep structure involvement.",
+    "Reduced active PIP flexion raises a possible <b>flexor tendon injury</b>, altered two-point discrimination on one border suggests a <b>digital nerve injury</b>.",
+    "Tendon and nerve injuries need exploration and specialist repair (hand surgery / plastics), closing over them in MIU risks missing a repairable injury.",
+    "Document neurovascular status, active and passive movement of each joint, and the sensory findings before referral, this is both clinical and medico-legal.",
+    "Address tetanus, this is tetanus-prone if the booster is out of date, give a booster / immunoglobulin per the schedule, plus analgesia and clean dressing pending review."
+  ],
+  diffs:[
+    ["Flexor tendon +/- digital nerve injury","v-most","Most likely"],
+    ["Simple superficial laceration","v-cant","Exam says otherwise"],
+    ["Retained foreign body","v-also","Keep in mind"]
+  ],
+  decision:{val:"Refer to hand surgery, do not close in MIU",
+    text:"Reduced flexion and altered sensation point to tendon and nerve involvement. Document the neurovascular and tendon exam, dress, analgesia, tetanus cover, and refer for exploration."},
+  refs:["Flexor tendon check","Digital nerve / two-point","Tetanus-prone wound","Refer before closure"]
+},
+{
+  sys:"illness", title:"Sore throat in a young adult", teaser:"Woman, 21, painful throat, wants antibiotics.",
+  dispatch:{
+    Call:"Primary care / MIU", Patient:"Female, 21", PC:"Sore throat, 3 days",
+    Scene:"Three days of an increasingly painful throat. Came into the walk-in centre asking for antibiotics, otherwise well in herself and up and about."
+  },
+  history:[
+    ["Duration","Three days, came in fairly quickly."],
+    ["Fever","Felt feverish yesterday and today."],
+    ["Cough","No cough, no runny nose."],
+    ["Swallowing","Painful but managing fluids, no drooling."],
+    ["PMH","Fit and well, not pregnant, no penicillin allergy."],
+    ["Systemic","No stridor, no muffled voice, no neck stiffness."]
+  ],
+  exam:[
+    "Temperature 38.1 °C.",
+    "<b>Tonsils inflamed with visible exudate.</b>",
+    "<b>Tender, enlarged anterior cervical lymph nodes.</b>",
+    "No cough, no coryza.",
+    "No trismus, no uvular deviation, no signs of quinsy, airway patent."
+  ],
+  redflag:{lab:"Score, don't guess",text:"A validated score turns a subjective sore throat into a defensible antibiotic decision. Reaching for antibiotics because the patient asked is exactly what these tools are designed to prevent."},
+  prompt:"Apply FeverPAIN (or Centor) to this patient. What is the score, and does it justify antibiotics? Cover your safety-netting.",
+  hint:"FeverPAIN: Fever in last 24h, Purulence, Attend rapidly (≤3 days), severely Inflamed tonsils, No cough or coryza. Count them.",
+  model:[
+    "<b>FeverPAIN</b>: Fever in the last 24h (1), Purulence (1), Attended rapidly within 3 days (1), severely Inflamed tonsils (1), No cough or coryza (1), giving a score of <b>5</b>.",
+    "By Centor she also scores highly, exudate, tender anterior nodes, fever, and absence of cough, so both tools agree.",
+    "A high score supports considering antibiotics, though shared decision-making and a back-up / delayed prescription remain reasonable options per NICE.",
+    "Crucially, rule out the emergencies first, quinsy, epiglottitis and airway compromise are excluded here (no trismus, drooling, stridor or muffled voice).",
+    "Safety-net clearly: return if unable to swallow fluids or saliva, drooling, difficulty breathing, muffled voice, or rapid deterioration. Simple analgesia and fluids regardless of the antibiotic decision."
+  ],
+  diffs:[
+    ["Bacterial tonsillitis (high FeverPAIN)","v-most","Most likely"],
+    ["Viral pharyngitis","v-also","Common, but score is high"],
+    ["Quinsy / airway emergency","v-cant","Excluded on exam"]
+  ],
+  decision:{val:"Consider antibiotics per score, safety-net firmly",
+    text:"FeverPAIN 5 supports antibiotics or a delayed prescription with shared decision-making. Analgesia, fluids, and clear return advice for airway or swallowing red flags. Document the score."},
+  refs:["FeverPAIN score","Centor criteria","Exclude quinsy","Delayed prescription (NICE)"]
+},
+{
+  sys:"illness", title:"Burning on passing urine", teaser:"Woman, 29, dysuria and frequency, otherwise well.",
+  dispatch:{
+    Call:"Primary care / MIU", Patient:"Female, 29", PC:"Painful urination, 2 days",
+    Scene:"Two days of burning on passing urine and needing to go frequently. Otherwise feels well, at work as normal, walked in on her lunch break."
+  },
+  history:[
+    ["Symptoms","Dysuria, frequency, urgency, mild suprapubic discomfort."],
+    ["Systemic","No fever, no flank pain, no rigors, no nausea or vomiting."],
+    ["Urine","Slightly cloudy, no visible blood reported."],
+    ["Pregnancy","<b>Not pregnant, confirmed.</b>"],
+    ["PMH","No recurrent UTIs, no catheter, no diabetes."],
+    ["Vaginal","No discharge or itch to suggest an alternative cause."]
+  ],
+  exam:[
+    "Apyrexial, observations within normal limits.",
+    "Mild suprapubic tenderness only.",
+    "<b>No flank / renal angle tenderness.</b>",
+    "No signs of systemic illness.",
+    "Not pregnant, no catheter, not immunosuppressed."
+  ],
+  redflag:{lab:"Simple vs upper tract",text:"The reasoning is separating an uncomplicated lower UTI from pyelonephritis or a complicated / at-risk patient. The presence or absence of flank pain and systemic features is the pivot."},
+  prompt:"Is this an uncomplicated lower UTI? Using NICE CKS reasoning, give your management and the features that would change it.",
+  hint:"Uncomplicated means a non-pregnant woman with lower tract symptoms and no features of upper tract infection or complicating factors. What would push you to escalate?",
+  model:[
+    "This fits an <b>uncomplicated lower UTI</b> in a non-pregnant woman, dysuria, frequency, urgency and suprapubic discomfort, with no upper tract or systemic features.",
+    "Per <b>NICE CKS</b>, first-line treatment is a short course of nitrofurantoin (with trimethoprim as an alternative subject to local resistance), plus fluids and analgesia.",
+    "The features that would change management are flank pain, fever, rigors, nausea and vomiting, which suggest <b>pyelonephritis</b> and need escalation.",
+    "Complicating factors that also change the plan are pregnancy, male sex, catheter, recurrent infection, diabetes or immunosuppression, none present here.",
+    "Safety-net clearly: return or escalate if flank pain, fever, rigors, vomiting or systemic deterioration, or if symptoms fail to settle. Document the negative red-flag screen and pregnancy status."
+  ],
+  diffs:[
+    ["Uncomplicated lower UTI","v-most","Most likely"],
+    ["Pyelonephritis","v-cant","No flank pain / systemic signs"],
+    ["Alternative (STI, vaginitis)","v-also","No discharge, less likely"]
+  ],
+  decision:{val:"Treat as uncomplicated UTI, safety-net for upper tract",
+    text:"Non-pregnant, lower tract only, no complicating factors. Antibiotics per NICE CKS / local formulary, fluids, analgesia. Escalate for flank pain, fever or systemic signs. Document pregnancy status."},
+  refs:["NICE CKS UTI","Uncomplicated vs complicated","Pyelonephritis red flags","Pregnancy check"]
+},
+{
+  sys:"eye", title:"Sudden red painful eye", teaser:"Woman, 52, long-sighted, one red eye, blurred vision and haloes.",
+  dispatch:{
+    Call:"MIU / urgent eye", Patient:"Female, 52", PC:"Red painful right eye",
+    Scene:"Sudden onset of a red, painful right eye this evening with blurred vision and haloes around lights. Presented holding a hand over the eye, looking pale and nauseated."
+  },
+  history:[
+    ["Onset","Sudden, over a couple of hours this evening."],
+    ["Pain","Severe deep aching around and behind the eye."],
+    ["Vision","<b>Blurred, with haloes around lights.</b>"],
+    ["Associated","Nausea, one episode of vomiting."],
+    ["Contact lenses","Does not wear lenses. No trauma or foreign body."],
+    ["PMH","Long-sighted (hypermetropic), no eye problems before."]
+  ],
+  exam:[
+    "Red eye with a hazy / cloudy cornea.",
+    "<b>Mid-dilated, poorly reactive pupil.</b>",
+    "<b>Reduced visual acuity</b> in the affected eye.",
+    "Eye feels hard to gentle palpation compared with the other side.",
+    "Severe pain with systemic nausea and vomiting."
+  ],
+  redflag:{lab:"Sight-threatening",text:"A red eye with reduced acuity, severe pain, haloes and a fixed mid-dilated pupil is not conjunctivitis. This cluster is a sight-threatening emergency and the decision is speed of referral."},
+  prompt:"Is this a treat-in-MIU red eye or an emergency? Name the likely diagnosis, the red flags that make the call, and your action.",
+  hint:"Severe pain, haloes, reduced acuity, a hard eye, nausea and a mid-dilated fixed pupil, in a long-sighted patient, cluster into one ophthalmic emergency.",
+  model:[
+    "This is a sight-threatening emergency, most likely <b>acute angle-closure glaucoma</b>.",
+    "The red-flag cluster driving that is severe pain, haloes around lights, reduced visual acuity, a mid-dilated poorly reactive pupil, a hard globe, and systemic nausea and vomiting, in a hypermetropic patient.",
+    "This is <b>not</b> a red eye to treat and discharge, delay risks permanent visual loss.",
+    "Action is <b>emergency ophthalmology referral / conveyance without delay</b>, this is time-critical.",
+    "Other sight-threatening causes to keep in mind for red-eye reasoning are acute iritis, keratitis and scleritis, but the halo / fixed-pupil / hard-eye picture here points at angle closure. Document acuity, pupil and the referral time."
+  ],
+  diffs:[
+    ["Acute angle-closure glaucoma","v-most","Most likely"],
+    ["Anterior uveitis / iritis","v-also","Differential to hold"],
+    ["Conjunctivitis","v-cant","Not this picture"]
+  ],
+  decision:{val:"Emergency ophthalmology referral without delay",
+    text:"Red flags cluster into acute angle-closure glaucoma, a sight-threatening emergency. Time-critical referral / conveyance. Document acuity, pupil findings and referral time. Not a treat-and-discharge."},
+  refs:["Red eye red flags","Acute angle-closure glaucoma","Reduced acuity","Time-critical referral"]
+}
+];
+
+/* =======================================================================
+   STATE + RENDER
+   ======================================================================= */
+const state = { done:new Set(), current:null, answers:{} };
+
+/* graceful persistence (works when hosted; silently no-ops in sandboxes) */
+try{
+  const saved = JSON.parse(localStorage.getItem("miu-progress")||"{}");
+  if(saved.done) state.done = new Set(saved.done);
+  if(saved.answers) state.answers = saved.answers;
+}catch(e){}
+function persist(){
+  try{ localStorage.setItem("miu-progress", JSON.stringify({done:[...state.done],answers:state.answers})); }catch(e){}
+}
+
+function updateProgress(){
+  document.getElementById("progressPill").textContent = state.done.size + " / " + CASES.length + " worked";
+}
+
+function buildGrid(){
+  const g = document.getElementById("caseGrid");
+  g.innerHTML = "";
+  CASES.forEach((c,i)=>{
+    const s = SYS[c.sys];
+    const el = document.createElement("button");
+    el.className = "case-card" + (state.done.has(i)?" done":"");
+    el.innerHTML = `
+      <span class="strip" style="background:${s.c}"></span>
+      <span class="done-flag">✓ worked</span>
+      <span class="num">Case ${String(i+1).padStart(2,"0")}</span>
+      <span class="sys" style="background:${s.c}">${s.label}</span>
+      <h4>${c.title}</h4>
+      <span class="teaser">${c.teaser}</span>`;
+    el.onclick = ()=>openCase(i);
+    g.appendChild(el);
+  });
+  updateProgress();
+}
+
+function dlHTML(obj){
+  return `<dl class="dl">${Object.entries(obj).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`;
+}
+function findingsHTML(arr){
+  return `<ul class="findings">${arr.map(f=>`<li>${f}</li>`).join("")}</ul>`;
+}
+function historyHTML(arr){
+  return `<dl class="dl">${arr.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`;
+}
+function diffsHTML(arr){
+  return `<div class="diffs">${arr.map(([dx,cls,verd])=>
+    `<div class="diff-row"><span class="dx">${dx}</span><span class="verdict ${cls}">${verd}</span></div>`).join("")}</div>`;
+}
+
+function openCase(i){
+  state.current = i;
+  const c = CASES[i], s = SYS[c.sys];
+  document.getElementById("home").style.display="none";
+  const view = document.getElementById("caseView");
+  view.classList.add("active");
+  document.getElementById("cvCounter").textContent = `Case ${i+1} of ${CASES.length}`;
+
+  const savedAnswer = state.answers[i] || "";
+  const alreadyRevealed = state.done.has(i);
+
+  document.getElementById("cvBody").innerHTML = `
+    <div class="case-title-row">
+      <span class="sys" style="background:${s.c}">${s.label}</span>
+      <h2>${c.title}</h2>
+    </div>
+
+    <figure class="case-hero" id="caseHero">
+      <img src="images/case-${String(i+1).padStart(2,"0")}.jpg" alt="${c.title}"
+           onerror="this.closest('.case-hero').style.display='none'">
+    </figure>
+
+    <div class="stage">
+      <div class="stage-label"><span class="tag">01 · Dispatch</span><span class="rule"></span></div>
+      <h3>The call</h3>
+      ${dlHTML(c.dispatch)}
+    </div>
+
+    <div class="stage">
+      <div class="stage-label"><span class="tag">02 · History</span><span class="rule"></span></div>
+      <h3>What she / he tells you</h3>
+      ${historyHTML(c.history)}
+    </div>
+
+    <div class="stage">
+      <div class="stage-label"><span class="tag">03 · Examination</span><span class="rule"></span></div>
+      <h3>On assessment</h3>
+      ${findingsHTML(c.exam)}
+      <div class="callout"><span class="lab">${c.redflag.lab}</span>${c.redflag.text}</div>
+    </div>
+
+    <div class="stage commit">
+      <div class="stage-label"><span class="tag">04 · Commit your reasoning</span><span class="rule"></span></div>
+      <p class="prompt">${c.prompt}</p>
+      <p class="hint">Hint: ${c.hint}</p>
+      <textarea id="answerBox" placeholder="Type your differential, the key finding driving it, and your plan...">${savedAnswer}</textarea>
+      <p class="locknote">Once you reveal, compare honestly against the worked reasoning. There is no auto-mark, this is yours to grade.</p>
+      <div style="margin-top:14px">
+        <button class="reveal-btn" id="revealBtn" onclick="revealAnswer(${i})">Lock in &amp; reveal worked reasoning</button>
+      </div>
+
+      <div class="answer ${alreadyRevealed?'show':''}" id="answerBlock">
+        <div class="yours">
+          <span class="lab">Your committed answer</span>
+          <p id="yourAnswerEcho">${savedAnswer||"(left blank)"}</p>
+        </div>
+        <div class="model">
+          <span class="lab">Worked reasoning</span>
+          <ul>${c.model.map(m=>`<li>${m}</li>`).join("")}</ul>
+        </div>
+        <div style="margin-top:16px">
+          <div class="stage-label"><span class="tag">Differential check</span><span class="rule"></span></div>
+          ${diffsHTML(c.diffs)}
+        </div>
+        <div style="margin-top:16px">
+          <div class="stage-label"><span class="tag">05 · Decision</span><span class="rule"></span></div>
+          <div class="decision-box">
+            <span class="verdict-lab">Disposition</span>
+            <div class="verdict-val">${c.decision.val}</div>
+            <p>${c.decision.text}</p>
+          </div>
+          <div class="ref-tags">${c.refs.map(r=>`<span class="rt">${r}</span>`).join("")}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if(alreadyRevealed){
+    const rb = document.getElementById("revealBtn");
+    rb.textContent = "Reasoning revealed";
+    rb.disabled = true;
+  }
+
+  document.getElementById("cvPrev").disabled = (i===0);
+  document.getElementById("cvNext").disabled = (i===CASES.length-1);
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+function revealAnswer(i){
+  const box = document.getElementById("answerBox");
+  const val = box.value.trim();
+  state.answers[i] = val;
+  document.getElementById("yourAnswerEcho").textContent = val || "(left blank)";
+  document.getElementById("answerBlock").classList.add("show");
+  const rb = document.getElementById("revealBtn");
+  rb.textContent = "Reasoning revealed";
+  rb.disabled = true;
+  state.done.add(i);
+  persist();
+  updateProgress();
+  document.getElementById("answerBlock").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function stepCase(dir){
+  const next = state.current + dir;
+  if(next>=0 && next<CASES.length) openCase(next);
+}
+
+function goHome(){
+  document.getElementById("caseView").classList.remove("active");
+  document.getElementById("home").style.display="block";
+  buildGrid();
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+/* live-save the textarea as they type */
+document.addEventListener("input",(e)=>{
+  if(e.target && e.target.id==="answerBox" && state.current!==null){
+    state.answers[state.current] = e.target.value;
+    persist();
+  }
+});
+
+buildGrid();
+</script>
+</body>
+</html>
